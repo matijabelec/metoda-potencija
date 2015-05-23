@@ -7,7 +7,8 @@ using namespace arma;
 int main(int argc, char** argv) {
     int n, iter;
     double pom, z, x, g = 0, d = 0;
-    bool directinput = (argc==2 && strcmp(argv[1], "--hide")==0) ? false : true;
+    bool directinput = (argc==2 && (strcmp(argv[1], "--hide")==0 || strcmp(argv[1], "--csvout")==0) ) ? false : true;
+    bool nocsvoutput = (argc==2 && strcmp(argv[1], "--csvout")==0) ? false : true;
     
     if(directinput) cout << "n: " << endl;
     cin >> n;
@@ -32,13 +33,15 @@ int main(int argc, char** argv) {
     cin >> iter;
     cout << std::setprecision(15);
     
-    cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
-    cout << "metoda: metoda potencija sa skaliranjem" << endl;
-    cout << "uneseni podaci: " << endl;
-    cout << "matrica m=" << endl << A << endl;
-    cout << "vektor v=(" << v(0); for(int i=1; i<n; i++) cout << ", " << v(i); cout << ")" << endl;
-    cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
-    cout << endl;
+    if(nocsvoutput) {
+        cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+        cout << "metoda: metoda potencija sa skaliranjem" << endl;
+        cout << "uneseni podaci: " << endl;
+        cout << "matrica m=" << endl << A << endl;
+        cout << "vektor v=(" << v(0); for(int i=1; i<n; i++) cout << ", " << v(i); cout << ")" << endl;
+        cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+        cout << endl;
+    }
     
     double l = 0.0;
     vec r = v;
@@ -51,21 +54,29 @@ int main(int argc, char** argv) {
         }
         z = 1.0 / pom;
         r = z * r;
-        cout << endl;
-        cout << "iteracija broj: " << i << endl;
-        cout << "     v=(" << r(0); for(int i=1; i<n; i++) cout << ", " << r(i); cout << ")" << endl;
+        if(nocsvoutput) {
+            cout << endl;
+            cout << "iteracija broj: " << i << endl;
+            cout << "     v=(" << r(0); for(int i=1; i<n; i++) cout << ", " << r(i); cout << ")" << endl;
+        } else {
+            cout << i+1 << ";";
+            cout << r(0); for(int i=1; i<n; i++) cout << ", " << r(i); cout << endl;
+        }
     }
-    cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
-    cout << endl;
+    if(nocsvoutput) cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+    if(nocsvoutput) cout << endl;
     
     mat B = A * r;
     for(int i=0; i<n; i++) {
         d += pow(r(i), 2.0);
         g += B(i, 0) * r(i);
     }
-    cout << "lambda: " << g/d << endl;
-    cout << "     v=(" << r(0); for(int i=1; i<n; i++) cout << ", " << r(i); cout << ")" << endl;
-    cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
-    
+    if(nocsvoutput) {
+        cout << "lambda: " << g/d << endl;
+        cout << "     v=(" << r(0); for(int i=1; i<n; i++) cout << ", " << r(i); cout << ")" << endl;
+        cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+    } else {
+        cout << "lambda;" << g/d << endl;
+    }
     return 0;
 }
